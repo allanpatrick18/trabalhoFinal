@@ -24,10 +24,7 @@ public class Ambiente {
     public Ambiente(String[][] espaco) {
         this.espaco = espaco;
     }
-     public Ambiente(String[][] espaco, double[][]espaco2D ) {
-        this.espaco = espaco;
-        this.espaco2D = espaco2D;
-    }
+
 
     public static void printMatrix() {
 
@@ -55,7 +52,6 @@ public class Ambiente {
 
     public void colocarParede(int m, int n) {
         espaco[m][n] = "x";
-        espaco2D[m][n] = 0.0;
 
 
     }

@@ -336,6 +336,8 @@ public class Agente {
         }
 
     }
+    
+    
     public List<Integer> acoesPosiveis(Estado state) {
 
         line = state.getLine();
@@ -436,17 +438,6 @@ public class Agente {
 
     }
 
-//    public void cicloDeRaciocinio() {
-//        printCrencas();
-//        acoesPosiveis(new Estado(line, colunm));
-//        if (way.size() > 0) {
-//            way.get(0);
-//            System.out.println("Proxima acao do plano: ir(" + way.get(0) + ")");
-//            ambiente.moveAgentenoAmbiente(way.get(0));
-//            movaAgente(way.get(0));
-//            way.remove(0);
-//        }
-//    }
 
     public void setPosicaoObjetivo(int lineObjetivo, int columnObjetivo) {
         this.lineObjetivo = lineObjetivo;

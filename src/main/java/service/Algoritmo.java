@@ -17,6 +17,7 @@ import model.Estado;
 import model.Fruta;
 import model.No;
 import static service.Agente.repreAmbiente;
+import static service.Ambiente.espaco2D;
 
 /**
  *
@@ -34,19 +35,23 @@ public class Algoritmo {
     String valorobj;
     List<No> arvore = new ArrayList<>();
     List<Integer> custototal = new ArrayList<>();
-    Fruta[][] fruta; 
+    Fruta[][] frutas;
+    public double[][] ambi;
 
-    public Algoritmo(Agente agente, Estado estadoInicial, Estado estadoFinal,    Fruta[][] f ) {
+    public Algoritmo(Agente agente, Estado estadoInicial, Estado estadoFinal, Fruta[][] f,double[][] ambi ) {
         this.agente = agente;
         this.estadoFinal = estadoFinal;
         this.estadoInicial = estadoInicial;
-        this.fruta =f;
+        this.frutas = f;
+        this.ambi= ambi;
     }
 
     public boolean algoritomo5() {
         Estado estadoAtual = new Estado();
         estadoAtual = estadoInicial;
         valorobj = estadoFinal.getValor();
+        agente.setRepreAmbiente();
+        conhecidos =  new ArrayList<>();
         no = new No();
         no.setPai(null);
         no.setCusto(0);
@@ -57,22 +62,22 @@ public class Algoritmo {
         arvore.add(no);
         arvore.add(null);
         fronteira = no;
+        fronteira.setEnergia(50000);
         int visitados = 0;
         int esplorados = 0;
-
+        loadFrutas();
         List<No> temp = new ArrayList<>();
         while (true) {
             for (int i = 0; i < acoes.size(); i++) {
                 No filhos = new No();
                 filhos.setPosicao(agente.funcaoSucessora(fronteira.getPosicao(), acoes.get(i)));
-                double cost =  agente.custo(acoes.get(i));
-                double heuristica = agente.getValor(filhos.getPosicao());
-                filhos.setFn(cost+heuristica);
-
+                double cost = agente.custo(acoes.get(i));
+                double heuristica = getValor(filhos.getPosicao());
+                filhos.setFn(cost + heuristica);
                 visitados++;
                 if (filhos.getPosicao().getValor().equals("O")) {
                     System.out.println("Visitados " + visitados + " Esplorados: " + esplorados);
-                    gg();
+  //          gg();
 //                    while(fronteira.getPai()!=null){
 //                        agente.marcarCaminho(fronteira.getPosicao());
 //                        fronteira.getPosicao().printEstado();
@@ -86,37 +91,40 @@ public class Algoritmo {
 
                 }
             }
-            if (conhecidos.size() > 0) {
-                esplorados++;
-                List<Integer> l = new ArrayList<>();
-                ordenarbyFn(conhecidos);
-                if (conhecidos.size() > 1) {
-                    for (int i = 0; i + 1 < conhecidos.size(); i++) {
-                        if (conhecidos.get(i).getFn() == conhecidos.get(i + 1).getFn()) {
-                            l.add(i);
-                        } else {
-                            break;
+            if (fronteira.getEnergia() > 0) {
+                if (conhecidos.size() > 0) {
+                    esplorados++;
+                    List<Integer> l = new ArrayList<>();
+                    ordenarbyFn(conhecidos);
+                    if (conhecidos.size() > 1) {
+                        for (int i = 0; i + 1 < conhecidos.size(); i++) {
+                            if (conhecidos.get(i).getFn() == conhecidos.get(i + 1).getFn()) {
+                                l.add(i);
+                            } else {
+                                break;
+                            }
                         }
                     }
+                    if (l.size() > 0) {
+                        Random r = new Random();
+                        Integer n = r.nextInt(l.size() + 1);
+                        fronteira = conhecidos.get(n);
+                    } else {
+                        fronteira = conhecidos.get(0);
+                    }
+                    conhecidos = new ArrayList<>();
+                    double tmp = fronteira.getFn();
+                    fronteira.setH(tmp);
+                    setValor(fronteira.getPosicao(), fronteira.getFn());
+                    fronteira.setEsplorado(true);
+                    setAcoes(agente.acoesPosiveis(fronteira.getPosicao()));
+                    Fruta fru = retornaFruta(fronteira.getPosicao());
+                    int perdas = fronteira.getFrutas().size() * 5 + 100 + 40;
+                    int total = fronteira.getEnergia() - perdas + comer(fru);
+                    fronteira.setEnergia(total);
                 }
-                if (l.size() > 0) {
-                    Random r = new Random();
-                    Integer n = r.nextInt(l.size() + 1);
-                    fronteira = conhecidos.get(n);
-                } else {
-                    fronteira = conhecidos.get(0);
-                }
-
-                conhecidos = new ArrayList<>();
-                double tmp = fronteira.getFn();
-                fronteira.setH(tmp);
-                agente.setValor(fronteira.getPosicao(), fronteira.getFn());
-                fronteira.setEsplorado(true);
-                setAcoes(agente.acoesPosiveis(fronteira.getPosicao()));
-                Fruta fru = retornaFruta(fronteira.getPosicao());
-                int perdas = fronteira.getFrutas().size()*5+100+40;
-                int total = fronteira.getEnergia() - perdas +comer(fru);
-                fronteira.setEnergia(total);
+            } else {
+                return false;
             }
         }
     }
@@ -164,15 +172,16 @@ public class Algoritmo {
     }
 
     public boolean gg() {
+        setValor(estadoInicial, 2000);
         No fronteira = new No();
         fronteira.setPosicao(estadoInicial);
         setAcoes(agente.acoesPosiveis(fronteira.getPosicao()));
-               conhecidos = new ArrayList<>();
+        conhecidos = new ArrayList<>();
         while (true) {
             for (int i = 0; i < acoes.size(); i++) {
                 No filhos = new No();
                 filhos.setPosicao(agente.funcaoSucessora(fronteira.getPosicao(), acoes.get(i)));
-                filhos.setFn(agente.getValor(filhos.getPosicao()));
+                filhos.setFn(getValor(filhos.getPosicao()));
                 if (filhos.getPosicao().getValor().equals("O")) {
                     return true;
                 } else {
@@ -189,15 +198,14 @@ public class Algoritmo {
             }
         }
     }
-    
-     
-       
-    public Fruta retornaFruta(Estado estado){
-    
-        return fruta[estado.getLine()][estado.getColunm()];
-    
+
+    public Fruta retornaFruta(Estado estado) {
+
+        return frutas[estado.getLine()][estado.getColunm()];
+
     }
-    public int comer(Fruta fruta) {
+
+    public Integer comer(Fruta fruta) {
         //// madureza
         // 1 verde
         // 2 madura
@@ -251,6 +259,60 @@ public class Algoritmo {
 
     }
 
+    public void printFrutas() {
+
+        System.out.println("\n Frutas valores ");
+
+        try {
+            Fruta[][] matrix = frutas;
+
+            int rows = matrix.length;
+            int columns = matrix[0].length;
+            String str = "|  ";
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < columns; j++) {
+                    str += comer(matrix[i][j]).toString() + "  ";
+                }
+
+                System.out.println(str + "|");
+                str = "|  ";
+            }
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < columns; j++) {
+                    frutas[i][j] = new Fruta();
+
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Matrix is empty!!");
+        }
+
+    }
+
+    public void loadFrutas() {
+
+        Fruta[][] matrix = frutas;
+
+        int rows = matrix.length;
+        int columns = matrix[0].length;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                frutas[i][j] = new Fruta();
+
+            }
+        }
+    }
+   
+    public void setValor(Estado state, double valor) {
+        ambi[state.getLine()][state.getColunm()] = valor;
+    }
+    public double getValor(Estado state) {
+        return ambi[state.getLine()][state.getColunm()];
+    }
 
 
 }

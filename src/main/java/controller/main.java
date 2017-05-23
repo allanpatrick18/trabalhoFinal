@@ -60,7 +60,7 @@ public class main {
             }
         }
         
-        ambiente = new Ambiente(space, amb);
+        ambiente = new Ambiente(space);
         ambiente.printMatrix();
         ambiente.colocarParede(0, 0);
         ambiente.colocarParede(0, 1);
@@ -107,25 +107,36 @@ public class main {
 
         Agente agente = new Agente(ambiente.getEspaco());
         agente.setPosicaoObjetivo(Integer.parseInt(line), Integer.parseInt(colunm));
-        Algoritmo ag = new Algoritmo(agente, inicial, estfinal,f);
+        Algoritmo ag = new Algoritmo(agente, inicial, estfinal,f,amb );
         boolean novamente = true;
-        while (true) {
+        int win =0;
+        int faild = 0;
+        while (faild+win<1000) {
             if (ag.algoritomo5()) {
-              //  agente.marcarAgete(inicial);
                 System.out.println("Sucesso");
-                agente.printCrencas();
-                agente.printCore();
-                InputStreamReader isr = new InputStreamReader(System.in);
-                BufferedReader br = new BufferedReader(isr);
-                String cadena = br.readLine();
-                if(cadena.equals(" ")){
-                novamente = false;
-                }
-                agente.setRepreAmbiente();
+          //     agente.printCrencas();
+          //      agente.printCore();
+//                InputStreamReader isr = new InputStreamReader(System.in);
+//                BufferedReader br = new BufferedReader(isr);
+//                String cadena = br.readLine();
+       //         ag.printFrutas();
+                win++;
+//                if(cadena.equals(" ")){
+//                novamente = false;
+//                }
+        //        agente.setRepreAmbiente();
                 
+            }else{
+                System.out.println("Falhou");
+          //      agente.printCrencas();
+          //      agente.printCore();
+                faild++;
+               
             }
             
         }
+        
+        System.out.println("Falhas: "+faild +"Sucesso"+win);
 
     }
 
