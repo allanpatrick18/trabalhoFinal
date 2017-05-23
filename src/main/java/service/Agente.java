@@ -513,7 +513,7 @@ public class Agente {
             
         }
 //        repreAmbiente[8][0] = "A";
-        repreAmbiente[2][8] = "O";
+        repreAmbiente[2][6] = "O";
         colocarParede(0, 0);
             colocarParede(0, 1);
             colocarParede(0, 4);
@@ -528,7 +528,6 @@ public class Agente {
             colocarParede(3, 4);
             colocarParede(3, 5);
             colocarParede(3, 6);
-            colocarParede(3, 7);
             colocarParede(5, 2);
             colocarParede(5, 5);
             colocarParede(5, 7);

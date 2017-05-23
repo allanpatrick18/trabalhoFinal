@@ -36,7 +36,7 @@ public class main {
         System.out.println("M:");
         m = "9";
 
-           int t = Integer.parseInt(n);
+        int t = Integer.parseInt(n);
         int t0 = Integer.parseInt(m);
         String[][] space = new String[t][t0];
         double[][] amb = new double[t][t0];
@@ -59,7 +59,7 @@ public class main {
 
             }
         }
-        
+
         ambiente = new Ambiente(space);
         ambiente.printMatrix();
         ambiente.colocarParede(0, 0);
@@ -68,7 +68,7 @@ public class main {
         ambiente.colocarParede(0, 5);
         ambiente.colocarParede(0, 6);
         ambiente.colocarParede(0, 7);
-        ambiente.colocarParede(1, 0);   
+        ambiente.colocarParede(1, 0);
         ambiente.colocarParede(2, 3);
         ambiente.colocarParede(2, 4);
         ambiente.colocarParede(2, 5);
@@ -76,7 +76,6 @@ public class main {
         ambiente.colocarParede(3, 4);
         ambiente.colocarParede(3, 5);
         ambiente.colocarParede(3, 6);
-        ambiente.colocarParede(3, 7);
         ambiente.colocarParede(5, 2);
         ambiente.colocarParede(5, 5);
         ambiente.colocarParede(5, 7);
@@ -107,36 +106,39 @@ public class main {
 
         Agente agente = new Agente(ambiente.getEspaco());
         agente.setPosicaoObjetivo(Integer.parseInt(line), Integer.parseInt(colunm));
-        Algoritmo ag = new Algoritmo(agente, inicial, estfinal,f,amb );
+        Algoritmo ag = new Algoritmo(agente, inicial, estfinal, f, amb);
         boolean novamente = true;
-        int win =0;
+        int win = 0;
         int faild = 0;
-        while (faild+win<1000) {
+        while (faild + win < 1000) {
             if (ag.algoritomo5()) {
                 System.out.println("Sucesso");
-          //     agente.printCrencas();
-          //      agente.printCore();
+                ag.printCore();
+                agente.printCrencas();
+                ag.printFrutas();
 //                InputStreamReader isr = new InputStreamReader(System.in);
 //                BufferedReader br = new BufferedReader(isr);
 //                String cadena = br.readLine();
-       //         ag.printFrutas();
+                //         ag.printFrutas();
                 win++;
 //                if(cadena.equals(" ")){
 //                novamente = false;
 //                }
-        //        agente.setRepreAmbiente();
-                
-            }else{
+                //        agente.setRepreAmbiente();
+
+            } else {
                 System.out.println("Falhou");
-          //      agente.printCrencas();
-          //      agente.printCore();
+                agente.printCrencas();
+                ag.printCore();
+                 ag.printFrutas();
+
                 faild++;
-               
+
             }
-            
+
         }
-        
-        System.out.println("Falhas: "+faild +"Sucesso"+win);
+
+        System.out.println("Falhas: " + faild + "Sucesso" + win);
 
     }
 

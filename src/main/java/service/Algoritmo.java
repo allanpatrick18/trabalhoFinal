@@ -28,7 +28,7 @@ public class Algoritmo {
     Agente agente;
     Estado estadoFinal;
     Estado estadoInicial;
-    static No no;
+    No no;
     List<No> fronteiras = new ArrayList<>();
     List<No> conhecidos = new ArrayList<>();
     List<Integer> acoes = new ArrayList<>();
@@ -36,37 +36,42 @@ public class Algoritmo {
     List<No> arvore = new ArrayList<>();
     List<Integer> custototal = new ArrayList<>();
     Fruta[][] frutas;
+     boolean flag = true;
     public double[][] ambi;
 
-    public Algoritmo(Agente agente, Estado estadoInicial, Estado estadoFinal, Fruta[][] f,double[][] ambi ) {
+    public Algoritmo(Agente agente, Estado estadoInicial, Estado estadoFinal, Fruta[][] f, double[][] ambi) {
         this.agente = agente;
         this.estadoFinal = estadoFinal;
         this.estadoInicial = estadoInicial;
         this.frutas = f;
-        this.ambi= ambi;
+        this.ambi = ambi;
     }
 
     public boolean algoritomo5() {
+
+       
+        if (flag) {
+            flag = false;
+            loadinicail();
+        }
         Estado estadoAtual = new Estado();
         estadoAtual = estadoInicial;
         valorobj = estadoFinal.getValor();
         agente.setRepreAmbiente();
-        conhecidos =  new ArrayList<>();
+        conhecidos = new ArrayList<>();
         no = new No();
         no.setPai(null);
         no.setCusto(0);
         setAcoes(agente.acoesPosiveis(estadoAtual));
-        no.setEsplorado(true);
         no.setPosicao(estadoInicial);
         No fronteira = null;
         arvore.add(no);
         arvore.add(null);
         fronteira = no;
-        fronteira.setEnergia(50000);
+        fronteira.setEnergia(300);
         int visitados = 0;
         int esplorados = 0;
         loadFrutas();
-        List<No> temp = new ArrayList<>();
         while (true) {
             for (int i = 0; i < acoes.size(); i++) {
                 No filhos = new No();
@@ -74,10 +79,11 @@ public class Algoritmo {
                 double cost = agente.custo(acoes.get(i));
                 double heuristica = getValor(filhos.getPosicao());
                 filhos.setFn(cost + heuristica);
+                filhos.setEnergia(fronteira.getEnergia());
                 visitados++;
                 if (filhos.getPosicao().getValor().equals("O")) {
                     System.out.println("Visitados " + visitados + " Esplorados: " + esplorados);
-  //          gg();
+             //     gg();
 //                    while(fronteira.getPai()!=null){
 //                        agente.marcarCaminho(fronteira.getPosicao());
 //                        fronteira.getPosicao().printEstado();
@@ -92,11 +98,13 @@ public class Algoritmo {
                 }
             }
             if (fronteira.getEnergia() > 0) {
+                  double tmp = fronteira.getFn();
+                  Estado tempespaco = fronteira.getPosicao();
                 if (conhecidos.size() > 0) {
                     esplorados++;
                     List<Integer> l = new ArrayList<>();
                     ordenarbyFn(conhecidos);
-                    if (conhecidos.size() > 1) {
+                     if (conhecidos.size() > 1) {
                         for (int i = 0; i + 1 < conhecidos.size(); i++) {
                             if (conhecidos.get(i).getFn() == conhecidos.get(i + 1).getFn()) {
                                 l.add(i);
@@ -111,15 +119,16 @@ public class Algoritmo {
                         fronteira = conhecidos.get(n);
                     } else {
                         fronteira = conhecidos.get(0);
+                    }     
+              //     fronteira = conhecidos.get(0);
+                   conhecidos.clear();
+                    if(tmp< fronteira.getFn()){
+                        setValor(tempespaco, fronteira.getFn());
                     }
-                    conhecidos = new ArrayList<>();
-                    double tmp = fronteira.getFn();
-                    fronteira.setH(tmp);
-                    setValor(fronteira.getPosicao(), fronteira.getFn());
                     fronteira.setEsplorado(true);
                     setAcoes(agente.acoesPosiveis(fronteira.getPosicao()));
                     Fruta fru = retornaFruta(fronteira.getPosicao());
-                    int perdas = fronteira.getFrutas().size() * 5 + 100 + 40;
+                    int perdas =  100 + 40;
                     int total = fronteira.getEnergia() - perdas + comer(fru);
                     fronteira.setEnergia(total);
                 }
@@ -152,7 +161,7 @@ public class Algoritmo {
         int x = abs(atual.getColunm() - estadoFinal.getColunm());
         double t = Math.sqrt(Math.pow(y, 2) + Math.pow(x, 2));
 //        t = Math.floor(t);
-//        t = Math.round(t);
+     //       t = Math.round(t);
         return t;
 
     }
@@ -292,6 +301,20 @@ public class Algoritmo {
 
     }
 
+    public void loadinicail() {
+
+        int rows = ambi.length;
+        int columns = ambi[0].length;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                 Estado s = new Estado(rows,columns);
+                ambi[i][j] = calculaheuristica(s);
+
+            }
+        }
+
+    }
+
     public void loadFrutas() {
 
         Fruta[][] matrix = frutas;
@@ -306,13 +329,34 @@ public class Algoritmo {
             }
         }
     }
-   
+    public void printCore() {
+
+        double[][] matrix = ambi;
+
+            int rows = matrix.length;
+            int columns = matrix[0].length;
+            String str = "|  ";
+
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < columns; j++) {
+                    str += matrix[i][j] + "  ";
+                }
+
+                System.out.println(str + "|");
+                str = "|  ";
+            }
+
+
+    }
+    
+  
+
     public void setValor(Estado state, double valor) {
         ambi[state.getLine()][state.getColunm()] = valor;
     }
+
     public double getValor(Estado state) {
         return ambi[state.getLine()][state.getColunm()];
     }
-
 
 }

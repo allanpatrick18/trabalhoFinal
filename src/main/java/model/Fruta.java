@@ -22,11 +22,11 @@ public class Fruta {
 
     public Fruta() {
         Random r = new Random();
-        madureza = r.nextInt(3);
-        carboidratos = r.nextInt(3);
-        fibras = r.nextInt(3);
-        proteinas = r.nextInt(3);
-        lipideos = r.nextInt(3);
+        madureza = r.nextInt(3)+1;
+        carboidratos = r.nextInt(3)+1;
+        fibras = r.nextInt(3)+1;
+        proteinas = r.nextInt(3)+1;
+        lipideos = r.nextInt(3)+1;
 
     }
 
