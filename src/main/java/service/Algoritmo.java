@@ -65,10 +65,10 @@ public class Algoritmo {
             for (int i = 0; i < acoes.size(); i++) {
                 No filhos = new No();
                 filhos.setPosicao(agente.funcaoSucessora(fronteira.getPosicao(), acoes.get(i)));
-                Fruta fru= retornaFruta(filhos.getPosicao());
-                int perdas = fronteira.getFrutas().size()*5+100+40;
-                int total = fronteira.getEnergia() - perdas +comer(fru);
-                filhos.setEnergia(total);
+                double cost =  agente.custo(acoes.get(i));
+                double heuristica = agente.getValor(filhos.getPosicao());
+                filhos.setFn(cost+heuristica);
+
                 visitados++;
                 if (filhos.getPosicao().getValor().equals("O")) {
                     System.out.println("Visitados " + visitados + " Esplorados: " + esplorados);
@@ -113,6 +113,10 @@ public class Algoritmo {
                 agente.setValor(fronteira.getPosicao(), fronteira.getFn());
                 fronteira.setEsplorado(true);
                 setAcoes(agente.acoesPosiveis(fronteira.getPosicao()));
+                Fruta fru = retornaFruta(fronteira.getPosicao());
+                int perdas = fronteira.getFrutas().size()*5+100+40;
+                int total = fronteira.getEnergia() - perdas +comer(fru);
+                fronteira.setEnergia(total);
             }
         }
     }
@@ -129,7 +133,7 @@ public class Algoritmo {
     public void ordenarbyFn(List<No> nos) {
         nos.sort(new Comparator<No>() {
             public int compare(No no1, No no2) {
-                return Double.compare(no1.ge, no2.getFn());
+                return Double.compare(no1.getFn(), no2.getFn());
             }
         });
 

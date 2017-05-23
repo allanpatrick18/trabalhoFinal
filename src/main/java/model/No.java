@@ -19,6 +19,8 @@ public class No {
     private List<No> adjacentes;
     public  int custo =0;
     public  int energia;
+    public  double fn=0;
+    public  double h;
     public  List<Fruta> frutas= new ArrayList<>();
     
     
@@ -74,9 +76,6 @@ public class No {
         return custo;
     }
 
-    public int getCusto() {
-        return custo;
-    }
 
     public void setCusto(int custo) {
         this.custo = custo;
@@ -97,6 +96,23 @@ public class No {
     public void setFrutas(List<Fruta> frutas) {
         this.frutas = frutas;
     }
+
+    public double getFn() {
+        return fn;
+    }
+
+    public void setFn(double fn) {
+        this.fn = fn;
+    }
+
+    public double getH() {
+        return h;
+    }
+
+    public void setH(double h) {
+        this.h = h;
+    }
+    
 
   
     
